@@ -1,3 +1,9 @@
+/*
+ * SelecTable by Josh Rouwhorst
+ * http://keybored.co
+ * (c) 2013, Released under the GNU v2 license
+ */
+
 (function($){
 	
 	var allValues = [],
@@ -266,7 +272,7 @@
 				for (var i = 0; i < columns.length; i++) {
 					headerValue = columns[i].name || "&nbsp;";
 					
-					headerHtml += "<td>" + columns[i].name + "</td>";
+					headerHtml += "<th>" + columns[i].name + "</th>";
 				}
 				
 				headerHtml += "</tr></thead>";
