@@ -1,0 +1,29 @@
+{
+	"name": "selectable",
+	"title": "SelecTable",
+	"description": "A jQuery plugin to easily create a Bootstrap-friendly table with selectable rows.",
+	"version": "0.1.0",
+	"author": {
+		"name": "Josh Rouwhorst",
+		"url": "http://keybored.co"
+	},
+	"licenses": [
+		{
+			"type": "GPLv2",
+			"url": "http://www.example.com/licenses/gpl.html"
+		}
+	],
+	"keywords": [
+		"table",
+		"selectable",
+		"select",
+		"mutliselect",
+		"bootstrap"
+	],
+	"homepage": "http://keybored.co/files/projects/selectable/",
+	"docs": "http://keybored.co/files/projects/selectable/",
+	"download": "http://keybored.co/files/projects/selectable/",
+	"dependencies": {
+		"jquery": ">=1.2.3"
+	}	
+}
