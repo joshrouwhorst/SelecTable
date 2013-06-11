@@ -115,6 +115,7 @@
 				recordId = parseInt($this.attr("st-data"), 10),
 				tableId = parseInt($this.parents("table[st-table]").attr("st-table"), 10),
 				clickedRecord = allValues[tableId][recordId],
+				multiselect = options.multiselect || false,
 				currentRecord,
 				found;
 			
@@ -126,7 +127,7 @@
 				}
 			}
 			
-			if (currentRecord && lastClickedRecord) {
+			if (currentRecord && lastClickedRecord && multiselect) {
 				shift = (e.shiftKey || e.shiftLeft) ? true : false;
 				ctrl = (e.ctrlKey || e.ctrlLeft) ? true : false;
 				
@@ -245,7 +246,7 @@
 				headerValue,
 				bodyHtml = "",
 				rowClass,
-				columnValue,
+				columnClasses = [],
 				alternateColorIndex = -1,
 				selected;
 			
@@ -253,8 +254,11 @@
 			
 			$this.addClass(TABLE_CLASS).attr("st-table", thisTableIndex);
 			
-			var alternateColor = function(){
-				if (++alternateColorIndex > options.rowClasses.length - 1) {
+			var alternateColor = function( record ){
+				if (typeof options.rowClasses === "function") {
+					return options.rowClasses(record);
+				}
+				else if (++alternateColorIndex > options.rowClasses.length - 1) {
 					alternateColorIndex = 0;
 				}
 				
@@ -266,28 +270,40 @@
 				}
 			};
 			
+			var makeCell = function( config ){
+				var columnValue = config.column.value( config.datum ) || "&nbsp;",
+					columnClass = (config.columnClass ? " class='" + config.columnClass + "'" : "");
+				
+				return "<td" + columnClass + ">" + columnValue + "</td>";
+			};
+			
+			/*if (tbody.length <= 0) {
+				tbody = $("<tbody></tbody>");
+				$this.html(tbody);
+			}*/
+			$this.html("");
+			
 			if (thead.length <= 0 && columns.length > 0 && !options.noHeader) {
-				headerHtml = "<thead><tr>";
+				headerHtml = "<thead" + (options.theadClass ? " class='" + options.theadClass : "") + "'><tr>";
 				
 				for (var i = 0; i < columns.length; i++) {
+					if (typeof columns[i].class === "function") {
+						columnClasses[i] = columns[i].class(columns[i]);
+					}
+					else if (columns[i].class) {
+						columnClasses[i] = columns[i].class;
+					}
+					
 					headerValue = columns[i].name || "&nbsp;";
 					
-					headerHtml += "<th>" + columns[i].name + "</th>";
+					headerHtml += "<th" + (columnClasses[i] ? " class='" + columnClasses[i] + "'" : "") + ">" + columns[i].name + "</th>";
 				}
 				
 				headerHtml += "</tr></thead>";
 				
 				thead = $(headerHtml);
 				
-				if (tbody.length > 0) {
-					tbody.before(thead);
-				}
-				else if (tfoot.length > 0){
-					tfoot.before(thead);
-				}
-				else{
-					$this.html(thead);
-				}
+				$this.html(thead);
 			}
 			
 			for (var i = 0; i < data.length; i++) {
@@ -300,34 +316,32 @@
 					rowClass += (rowClass ? " " : "") + "st-record-selected";
 				}
 				
-				rowClass += (rowClass ? " " : "") + alternateColor();
+				rowClass += (rowClass ? " " : "") + alternateColor( data[i] );
 				
 				bodyHtml += "<tr st-data='" + i + "' class='" + rowClass + "'>";
 				
 				for (var j = 0; j < columns.length; j++) {
-					columnValue = columns[j].value(data[i]) || "&nbsp;";
-					
-					bodyHtml += "<td>" + columnValue + "</td>";
+					bodyHtml += makeCell({
+						datum: data[i],
+						column: columns[j],
+						columnClass: columnClasses[j]
+					});
 				}
 				
 				bodyHtml += "</tr>";
 			}
 			
-			if (tbody.length > 0) {
-				tbody.append(bodyHtml);
+			if (thead.length > 0) {
+				
+			}
+			
+			tbody = $("<tbody>" + bodyHtml + "</tbody>");
+			
+			if (thead.length > 0) {
+				thead.after(tbody);
 			}
 			else{
-				tbody = $("<tbody>" + bodyHtml + "</tbody>");
-				
-				if (thead.length > 0) {
-					thead.after(tbody);
-				}
-				else if (tfoot.length > 0) {
-					tfoot.before(tbody);
-				}
-				else{
-					$this.html(tbody);
-				}
+				$this.html(tbody);
 			}
 			
 			tbody.find("tr").click( click );
