@@ -287,11 +287,10 @@
 				headerHtml = "<thead" + (options.theadClass ? " class='" + options.theadClass : "") + "'><tr>";
 				
 				for (var i = 0; i < columns.length; i++) {
-					if (typeof columns[i].class === "function") {
-						columnClasses[i] = columns[i].class(columns[i]);
-					}
-					else if (columns[i].class) {
-						columnClasses[i] = columns[i].class;
+					if (columns[i].className && typeof columns[i].className !== "function") {
+						columnClasses[i] = columns[i].className;
+					} else if (columns[i].className) {
+						columnClasses[i] = columns[i].className(columns[i]);
 					}
 					
 					headerValue = columns[i].name || "&nbsp;";
@@ -329,10 +328,6 @@
 				}
 				
 				bodyHtml += "</tr>";
-			}
-			
-			if (thead.length > 0) {
-				
 			}
 			
 			tbody = $("<tbody>" + bodyHtml + "</tbody>");
